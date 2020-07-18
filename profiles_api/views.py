@@ -1,0 +1,172 @@
+from django.shortcuts import render
+
+# Create your views here.
+from rest_framework import generics
+from rest_framework.permissions import AllowAny,IsAuthenticated
+from .models import UserProfile
+from django.contrib.auth import authenticate
+from django.contrib.auth.models import User,auth
+from django.contrib import messages
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.authtoken.models import Token
+from rest_framework.authentication import TokenAuthentication
+from django.contrib.auth.models import User
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.views import APIView
+
+
+from django.shortcuts import render
+from django.http import JsonResponse
+import json
+from django.db.models import Q
+from rest_framework import status
+
+
+
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from .models import farmer,fields_info,products_info,CropNames
+from .serializer import FarmerSerializer,FarmerIdSerializer,FieldSerializer,FieldIdSerializer,ProductsInfoSerializer,CropNamesSerializer
+
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def trial(request,*args,**kwargs):
+     return Response(data='Only for Logged in Users',status=status.HTTP_200_OK)
+
+
+
+
+# Create your views here.
+@api_view(['POST'])
+def feedFarmerInfo(request):
+    """ POST personal info of A farmer"""
+    serializer=FarmerSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+def listAllFarmer(request):
+    """GET personal info of ALL FARMERS """
+    obj=farmer.objects.all()
+    serializer=FarmerSerializer(obj,many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def listOneFarmer(request,pk):
+    """get info of particular farmer """
+    obj=farmer.objects.get(phone_no=pk)
+    serializer=FarmerSerializer(obj,many=False)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+def listIdFarmer(request,pk):
+    """get ONLY FARMER ID  of particular farmer """
+    obj=farmer.objects.get(phone_no=pk)
+    serializer=FarmerIdSerializer(obj,many=False)
+    return Response(serializer.data)
+
+
+
+
+
+"""VIEWS FOR FIELD DETAILS """
+
+
+
+
+@api_view(['POST'])
+def listAddField(request):
+    """Add field for PARTICULAR  farmer"""
+    serializer=FieldSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def listFieldFarmer(request,pk):
+    """Get field adress of PARTICULAR  farmer"""
+    obj=fields_info.objects.get(farmer=pk)
+    serializer=FieldIdSerializer(obj,many=False)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def listFieldsFarmer(request):
+    """Get field adress of ALL the FARMERS"""
+    obj=fields_info.objects.all()
+    serializer=FieldSerializer(obj,many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def listIdFieldFarmer(request,pk):
+    """get ONLY FARMER ID  of particular farmer """
+    obj=fields_info.objects.get(farmer=pk)
+    serializer=FarmerIdSerializer(obj,many=False)
+    return Response(serializer.data)
+
+
+
+"""ADD PRODUCT DETAILS OF THE FIELD OF THE FARMER"""
+
+
+
+
+@api_view(['POST'])
+def listAddProduct(request):
+    """Add crop of the farmer linked with the field """
+    serializer=ProductsInfoSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+def listAllProduct(request):
+    """get product of all farmers """
+    obj=products_info.objects.all()
+    serializer=ProductsInfoSerializer(obj,many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def listProductFarmer(request,pk):
+    """get product of SPECIFIC  farmers """
+    obj=products_info.objects.get(field=pk)
+    serializer=ProductsInfoSerializer(obj,many=False)
+    return Response(serializer.data)
+
+
+
+""""VIEWS BASED ON CROP FUNCTIONS"""
+
+
+@api_view(['GET'])
+def listCrop(request,pk):
+    """Get SPECIFIC CROP """
+    obj=CropNames.objects.get(crop_id=pk)
+    serializer=CropNamesSerializer(obj,many=False)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+def listAllCropName(request):
+    """get product of all farmers """
+    obj=CropNames.objects.all()
+    serializer=CropNamesSerializer(obj,many=True)
+    return Response(serializer.data)
+
+@api_view(['POST'])
+def listCropName(request):
+    """Add crop of the farmer linked with the field """
+    serializer=CropNamesSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
