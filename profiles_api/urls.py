@@ -5,7 +5,7 @@ from profiles_api import views
 
 urlpatterns=[
     path('auth/',include('djoser.urls')),
-    path('auth/',include('djoser.urls.jwt')),
+    path('auth/',include('djoser.urls.authtoken')),
     path('auth/trial/',views.trial),
     path('list-add-farmer/',views.feedFarmerInfo),
     path('list-all-farmer/',views.listAllFarmer),
