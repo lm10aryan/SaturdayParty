@@ -9,7 +9,7 @@ PROJECT_BASE_PATH='/usr/local/apps/profiles-rest-api'
 
 echo "Installing dependencies..."
 apt-get update
-apt-get install -y python3-dev python3-venv sqlite python-pip supervisor nginx git djoser 
+apt-get install -y python3-dev python3-venv sqlite python-pip supervisor nginx git djoser
 
 # Create project directory
 mkdir -p $PROJECT_BASE_PATH
@@ -22,6 +22,8 @@ python3 -m venv $PROJECT_BASE_PATH/env
 # Install python packages
 $PROJECT_BASE_PATH/env/bin/pip install -r $PROJECT_BASE_PATH/requirements.txt
 $PROJECT_BASE_PATH/env/bin/pip install uwsgi==2.0.18
+$PROJECT_BASE_PATH/env/bin/pip install djoser==2.0.3
+
 
 # Run migrations and collectstatic
 cd $PROJECT_BASE_PATH
