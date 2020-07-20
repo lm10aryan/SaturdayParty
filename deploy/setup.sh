@@ -22,7 +22,12 @@ python3 -m venv $PROJECT_BASE_PATH/env
 # Install python packages
 $PROJECT_BASE_PATH/env/bin/pip install -r $PROJECT_BASE_PATH/requirements.txt
 $PROJECT_BASE_PATH/env/bin/pip install uwsgi==2.0.18
+<<<<<<< HEAD
 $PROJECT_BASE_PATH/env/bin/pip install djoser==2.0.3
+=======
+$PROJECT_BASE_PATH/env/bin/pip install djoser==2.0.1
+
+>>>>>>> 494816e9c39e2d85231caeff02404b92db152bde
 
 
 # Run migrations and collectstatic
