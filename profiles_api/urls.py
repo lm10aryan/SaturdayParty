@@ -21,6 +21,10 @@ urlpatterns=[
     path('list-crop-name/<str:pk>/',views.listCrop),
     path('list-add-crop-name/',views.listCropName),
     path('list-all-crop-name/',views.listAllCropName),
+    path('users/<int:pk>/', views.UserDetail.as_view()),
+    path('users/', views.UserList.as_view()),
+
+
 
 
  ]

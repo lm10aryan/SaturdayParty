@@ -17,28 +17,39 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from rest_framework.views import APIView
 
 
+
 from django.shortcuts import render
 from django.http import JsonResponse
 import json
 from django.db.models import Q
 from rest_framework import status
+from rest_framework import generics
 
 
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import farmer,fields_info,products_info,CropNames
-from .serializer import FarmerSerializer,FarmerIdSerializer,FieldSerializer,FieldIdSerializer,ProductsInfoSerializer,CropNamesSerializer
+from .serializer import FarmerSerializer,FarmerIdSerializer,FieldSerializer,FieldIdSerializer,ProductsInfoSerializer,CropNamesSerializer,UserCreateSerializer
+
+
+class UserDetail(generics.RetrieveAPIView):
+    queryset = UserProfile.objects.all()
+    serializer_class = UserCreateSerializer
+    authentication_classes=(TokenAuthentication,)
+    permission_classes = [IsAuthenticated,IsOwnerOrReadOnly]
+
+
+class UserList(generics.ListAPIView):
+    queryset = UserProfile.objects.all()
+    serializer_class = UserCreateSerializer
+
 
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
 def trial(request,*args,**kwargs):
-     return Response(data='Only for Logged in Users',status=status.HTTP_200_OK)
-
-
-
+    return Response(data=request.user,status=status.HTTP_200_OK)
 
 # Create your views here.
 @api_view(['POST'])
@@ -60,7 +71,7 @@ def listAllFarmer(request):
 @api_view(['GET'])
 def listOneFarmer(request,pk):
     """get info of particular farmer """
-    obj=farmer.objects.get(phone_no=pk)
+    obj=farmer.objects.get(farmer_id=pk)
     serializer=FarmerSerializer(obj,many=False)
     return Response(serializer.data)
 
@@ -68,7 +79,7 @@ def listOneFarmer(request,pk):
 @api_view(['GET'])
 def listIdFarmer(request,pk):
     """get ONLY FARMER ID  of particular farmer """
-    obj=farmer.objects.get(phone_no=pk)
+    obj=farmer.objects.get(farmer_id=pk)
     serializer=FarmerIdSerializer(obj,many=False)
     return Response(serializer.data)
 
