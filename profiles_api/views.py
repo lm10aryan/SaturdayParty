@@ -37,8 +37,6 @@ class UserDetail(generics.RetrieveAPIView):
     queryset = UserProfile.objects.all()
     serializer_class = UserCreateSerializer
     authentication_classes=(TokenAuthentication,)
-    permission_classes = [IsAuthenticated,IsOwnerOrReadOnly]
-
 
 class UserList(generics.ListAPIView):
     queryset = UserProfile.objects.all()
@@ -53,6 +51,7 @@ def trial(request,*args,**kwargs):
 
 # Create your views here.
 @api_view(['POST'])
+@permission_classes([])
 def feedFarmerInfo(request):
     """ POST personal info of A farmer"""
     serializer=FarmerSerializer(data=request.data)
