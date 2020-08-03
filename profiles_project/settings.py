@@ -64,7 +64,7 @@ DJOSER = {
         'user': 'profiles_api.serializer.UserCreateSerializer',
         #'current_user': 'authentication.serializer.CurrentUserSerializer'
     },
-    
+
 }
 
 MIDDLEWARE = [
