@@ -16,39 +16,54 @@ from django.contrib.auth.models import User
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.views import APIView
 
+import json
 
 from django.shortcuts import render
 from django.http import JsonResponse
 import json
 from django.db.models import Q
 from rest_framework import status
-
+from rest_framework import generics
 
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import farmer,fields_info,products_info,CropNames
-from .serializer import FarmerSerializer,FarmerIdSerializer,FieldSerializer,FieldIdSerializer,ProductsInfoSerializer,CropNamesSerializer
+from .serializer import FarmerSerializer,FarmerIdSerializer,FieldSerializer,FieldIdSerializer,ProductsInfoSerializer,CropNamesSerializer,UserCreateSerializer
+
+
+class UserDetail(generics.RetrieveAPIView):
+    queryset = UserProfile.objects.all()
+    serializer_class = UserCreateSerializer
+    authentication_classes=(TokenAuthentication,)
+
+class UserList(generics.ListAPIView):
+    queryset = UserProfile.objects.all()
+    serializer_class = UserCreateSerializer
+
 
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def trial(request,*args,**kwargs):
-     return Response(data='Only for Logged in Users',status=status.HTTP_200_OK)
-
-
-
+def trial(request):
+    return Response(data=request.user.id,status=status.HTTP_200_OK)
 
 # Create your views here.
 @api_view(['POST'])
 def feedFarmerInfo(request):
     """ POST personal info of A farmer"""
+    user=request.user.id
     serializer=FarmerSerializer(data=request.data)
+    info = request.data.get("farmer_id")
+    lol=int(info)
+    if user != lol:
+        return Response({'response':"You are not authorised to do that"})
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    return Response({'response':"Good job!"})
+
 
 @api_view(['GET'])
 def listAllFarmer(request):
@@ -60,16 +75,24 @@ def listAllFarmer(request):
 @api_view(['GET'])
 def listOneFarmer(request,pk):
     """get info of particular farmer """
-    obj=farmer.objects.get(phone_no=pk)
+    user=request.user.id
+    primarykey=int(pk)
+    obj=farmer.objects.get(farmer_id=pk)
     serializer=FarmerSerializer(obj,many=False)
+    if user != primarykey:
+        return Response({'response':"You dont have permission to see buddy :)"})
     return Response(serializer.data)
 
 
 @api_view(['GET'])
 def listIdFarmer(request,pk):
     """get ONLY FARMER ID  of particular farmer """
-    obj=farmer.objects.get(phone_no=pk)
+    user=request.user.id
+    primarykey=int(pk)
+    obj=farmer.objects.get(farmer_id=pk)
     serializer=FarmerIdSerializer(obj,many=False)
+    if user != primarykey:
+        return Response({'response':"You dont have permission to see buddy :)"})
     return Response(serializer.data)
 
 
@@ -84,7 +107,12 @@ def listIdFarmer(request,pk):
 @api_view(['POST'])
 def listAddField(request):
     """Add field for PARTICULAR  farmer"""
+    user=request.user.id
     serializer=FieldSerializer(data=request.data)
+    info = request.data.get("farmer")
+    lol=int(info)
+    if user != lol:
+        return Response({'response':"You are not authorised to do that"})
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -94,7 +122,11 @@ def listAddField(request):
 @api_view(['GET'])
 def listFieldFarmer(request,pk):
     """Get field adress of PARTICULAR  farmer"""
+    user=request.user.id
+    primarykey=int(pk)
     obj=fields_info.objects.get(farmer=pk)
+    if user != primarykey:
+        return Response({'response':"You dont have permission to see buddy :)"})
     serializer=FieldIdSerializer(obj,many=False)
     return Response(serializer.data)
 
@@ -108,8 +140,12 @@ def listFieldsFarmer(request):
 @api_view(['GET'])
 def listIdFieldFarmer(request,pk):
     """get ONLY FARMER ID  of particular farmer """
+    user=request.user.id
+    primarykey=int(pk)
     obj=fields_info.objects.get(farmer=pk)
     serializer=FarmerIdSerializer(obj,many=False)
+    if user != primarykey:
+        return Response({'response':"You dont have permission to see buddy :)"})
     return Response(serializer.data)
 
 

@@ -51,13 +51,9 @@ REST_FRAMEWORK = {
             'rest_framework.authentication.TokenAuthentication',
             'rest_framework.authentication.SessionAuthentication',
         ),
-        'DEFAULT_PERMISSION_CLASSES':(
-            'rest_framework.permissions.IsAuthenticated',
-        ),
+        'DEFAULT_PERMISSION_CLASSES':('rest_framework.permissions.IsAuthenticated',),
     }
 AUTH_USER_MODEL='profiles_api.UserProfile'
-
-
 
 
 DJOSER = {
@@ -68,6 +64,7 @@ DJOSER = {
         'user': 'profiles_api.serializer.UserCreateSerializer',
         #'current_user': 'authentication.serializer.CurrentUserSerializer'
     },
+
 }
 
 MIDDLEWARE = [

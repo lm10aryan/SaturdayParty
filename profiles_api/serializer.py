@@ -15,7 +15,7 @@ class FarmerSerializer(serializers.ModelSerializer):
         model=farmer
         fields=[
             'farmer_id',
-             'f_name',
+            'f_name',
             'l_name',
             'street',
             'village',

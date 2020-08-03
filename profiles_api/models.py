@@ -132,3 +132,5 @@ class products_info(models.Model):
     def __str__(self):
         """Return product Name of the crop"""
         return self.product_name
+
+ 
