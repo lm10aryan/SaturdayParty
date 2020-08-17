@@ -23,7 +23,10 @@ urlpatterns=[
     path('list-all-crop-name/',views.listAllCropName),
     path('users/<int:pk>/', views.UserDetail.as_view()),
     path('users/', views.UserList.as_view()),
-
+    path('list-all-questions/',views.listquestionsheet),
+    path('list-add-question/',views.listaddquestion),
+    path('list-some-questions/',views.listquestionsheetwise),
+    path('list-past-condition/',views.listpastcondition),
 
 
 

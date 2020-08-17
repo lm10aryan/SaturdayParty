@@ -133,4 +133,16 @@ class products_info(models.Model):
         """Return product Name of the crop"""
         return self.product_name
 
- 
+
+class QuestionSheet(models.Model):
+    """Question Sheet for the crop"""
+    id=models.AutoField(primary_key=True)
+    past_question=models.CharField(max_length=255)
+    future_question=models.CharField(max_length=255)
+    type=models.CharField(max_length=50)
+    constraint=models.CharField(max_length=50,default='',blank=True)
+    options_text=models.CharField(max_length=300,default='',blank=True)
+    options_value=models.CharField(max_length=50,default='',blank=True)
+    question_tag=models.CharField(max_length=100)
+    past_condition=models.CharField(max_length=100,default='',blank=True)
+    future_condition=models.CharField(max_length=100,default='',blank=True)

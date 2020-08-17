@@ -28,8 +28,8 @@ from rest_framework import generics
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .models import farmer,fields_info,products_info,CropNames
-from .serializer import FarmerSerializer,FarmerIdSerializer,FieldSerializer,FieldIdSerializer,ProductsInfoSerializer,CropNamesSerializer,UserCreateSerializer
+from .models import farmer,fields_info,products_info,CropNames,QuestionSheet
+from .serializer import FarmerSerializer,FarmerIdSerializer,FieldSerializer,FieldIdSerializer,ProductsInfoSerializer,CropNamesSerializer,UserCreateSerializer,QuestionSheetSerializer
 
 
 class UserDetail(generics.RetrieveAPIView):
@@ -206,3 +206,41 @@ def listCropName(request):
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+
+"""VIEWS BASED ON QUESTIONS SHEET"""
+@api_view(['GET'])
+def listquestionsheet(request):
+    """get all questions """
+    obj=QuestionSheet.objects.all()
+    serializer=QuestionSheetSerializer(obj,many=True)
+    return Response(serializer.data)
+
+
+@api_view(['POST'])
+def listaddquestion(request):
+    serializer=QuestionSheetSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+@api_view(['GET'])
+def listquestionsheetwise(request):
+    """get all questions """
+    obj=QuestionSheet.objects.filter(id__gt=1)
+    serializer=QuestionSheetSerializer(obj,many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+def listpastcondition(request):
+    """get all questions """
+    obj=QuestionSheet.objects.get(id__exact=2)
+    lala=obj.past_condition
+    return Response({'response':lala})
