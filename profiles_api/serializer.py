@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import UserProfile
 from djoser.serializers import UserCreateSerializer,UserSerializer
-from profiles_api.models import farmer,fields_info,products_info,CropNames,QuestionSheet
+from profiles_api.models import farmer,fields_info,products_info,CropNames,QuestionSheet,PhaseDecider,PhaseQuestionLinker,DailyAlertCycle
 
 class UserCreateSerializer(UserCreateSerializer):
     class Meta(UserCreateSerializer.Meta):
@@ -85,4 +85,49 @@ class QuestionSheetSerializer(serializers.ModelSerializer):
             'question_tag',
             'past_condition',
             'future_condition',
+        ]
+
+
+class PhaseDeciderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=PhaseDecider
+        fields=[
+            'id',
+            'crop',
+            'phase_id',
+            'start_day',
+            'end_day',
+        ]
+
+class PhaseIdSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=PhaseDecider
+        fields=[
+            'phase_id'
+        ]
+
+
+class PhaseQuestionLinkerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=PhaseQuestionLinker
+        fields=[
+            'phase',
+            'question_id',
+            'tense',
+        ]
+
+class DailyAlertCycleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=DailyAlertCycle
+        fields=[
+            'day_cycle',
+            'day_action',
+            'day_adv',
+            'fertiliser',
+            'fert_spray',
+            'fert_adv',
+            'diseases',
+            'symptoms',
+            'causes',
+            'prevention'
         ]

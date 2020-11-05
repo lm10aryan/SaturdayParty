@@ -16,6 +16,12 @@ from django.contrib.auth.models import User
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.views import APIView
 
+from django.core.serializers.json import DjangoJSONEncoder
+
+from django.utils import timezone
+import datetime
+from django.db.models import Q
+
 import json
 
 from django.shortcuts import render
@@ -25,11 +31,13 @@ from django.db.models import Q
 from rest_framework import status
 from rest_framework import generics
 
+from .models import *
+from .serializer import *
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .models import farmer,fields_info,products_info,CropNames,QuestionSheet
-from .serializer import FarmerSerializer,FarmerIdSerializer,FieldSerializer,FieldIdSerializer,ProductsInfoSerializer,CropNamesSerializer,UserCreateSerializer,QuestionSheetSerializer
+#from .models import farmer,fields_info,products_info,CropNames,QuestionSheet,PhaseDecider,PhaseQuestionLinker
+#from .serializer import FarmerSerializer,FarmerIdSerializer,FieldSerializer,FieldIdSerializer,ProductsInfoSerializer,CropNamesSerializer,UserCreateSerializer,QuestionSheetSerializer,PhaseDeciderSerializer,PhaseIdSerializer,PhaseQuestionLinkerSerializer
 
 
 class UserDetail(generics.RetrieveAPIView):
@@ -62,7 +70,6 @@ def feedFarmerInfo(request):
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    return Response({'response':"Good job!"})
 
 
 @api_view(['GET'])
@@ -244,3 +251,110 @@ def listpastcondition(request):
     obj=QuestionSheet.objects.get(id__exact=2)
     lala=obj.past_condition
     return Response({'response':lala})
+
+
+
+
+"""VIEWS BASED ON PHASE DECIDER MODEL"""
+
+
+
+
+@api_view(['POST'])
+def listaddphase(request):
+    serializer=PhaseDeciderSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def listallphase(request):
+    """get all phase data """
+    obj=PhaseDecider.objects.all()
+    serializer=PhaseDeciderSerializer(obj,many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def listsomephase(request,pk):
+    """get some phase data"""
+    daysvalue=int(pk)
+    lowvalue=-60+daysvalue
+    upvalue=60-daysvalue
+    if(daysvalue>60):
+        obj=PhaseDecider.objects.filter(start_day__gte=1)
+    else:
+        obj=PhaseDecider.objects.filter(start_day__gt=1).filter(end_day__gt=upvalue)| PhaseDecider.objects.filter(start_day__lte=0).filter(end_day__gte=lowvalue)
+    serializer=PhaseIdSerializer(obj,many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+def getcurrentdate(request):
+    #day=datetime.date(year=2020, month=11, day=14)
+    #currentdate=timezone.now().date()-day
+    #userid=request.user.id
+    #obj=PhaseDecider.objects.filter(phase_id__gt=6)
+    obj=PhaseDecider.objects.only('phase_id')
+    serializer=PhaseDeciderSerializer(obj,many=True)
+    return Response(serializer.data)
+
+
+
+"""views based on Phase question linker"""
+
+
+
+
+@api_view(['GET'])
+def listphasequestionlinker(request):
+    """get all phase data """
+    obj=PhaseQuestionLinker.objects.all()
+    serializer=PhaseQuestionLinkerSerializer(obj,many=True)
+    return Response(serializer.data)
+
+
+@api_view(['POST'])
+def listaddlinker(request):
+    serializer=PhaseQuestionLinkerSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+@api_view(['GET'])
+def listsomelinker(request,pk):
+    """get all phase data """
+    obj=PhaseQuestionLinker.objects.filter(phase__exact=pk)
+    serializer=PhaseQuestionLinkerSerializer(obj,many=True)
+    return Response(serializer.data)
+
+
+
+"""VIEWS BASED ON DAILY ALERTS"""
+@api_view(['POST'])
+def listaddalert(request):
+    serializer=DailyAlertCycleSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def listallalert(request):
+    """get all phase data """
+    obj=DailyAlertCycle.objects.all()
+    serializer=DailyAlertCycleSerializer(obj,many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def listdayalert(request,pk):
+    """get all phase data """
+    obj=DailyAlertCycle.objects.filter(day_cycle__exact=pk)
+    serializer=DailyAlertCycleSerializer(obj,many=True)
+    #var obj = JSON.parse(data);
+    return Response({'response':'lalalala'})

@@ -27,6 +27,16 @@ urlpatterns=[
     path('list-add-question/',views.listaddquestion),
     path('list-some-questions/',views.listquestionsheetwise),
     path('list-past-condition/',views.listpastcondition),
+    path('list-add-phase/',views.listaddphase),
+    path('list-all-phase/',views.listallphase),
+    path('list-some-phase/<str:pk>/',views.listsomephase),
+    path('list-date/',views.getcurrentdate),
+    path('list-all-linker/',views.listphasequestionlinker),
+    path('list-add-linker/',views.listaddlinker),
+    path('list-some-linker/<str:pk>/',views.listsomelinker),
+    path('list-add-alert/',views.listaddalert),
+    path('list-all-alert/',views.listallalert),
+    path('list-day-alert/<str:pk>/',views.listdayalert),
 
 
 

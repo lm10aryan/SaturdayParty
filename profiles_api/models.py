@@ -146,3 +146,94 @@ class QuestionSheet(models.Model):
     question_tag=models.CharField(max_length=100)
     past_condition=models.CharField(max_length=100,default='',blank=True)
     future_condition=models.CharField(max_length=100,default='',blank=True)
+
+class PhaseDecider(models.Model):
+    """Decides which phase for particular farmer based on sow in date"""
+    id=models.AutoField(primary_key=True)
+    crop=models.ForeignKey(CropNames,on_delete=models.DO_NOTHING)
+    phase_id=models.IntegerField()
+    start_day=models.IntegerField()
+    end_day=models.IntegerField()
+
+class PhaseQuestionLinker(models.Model):
+    """Links phase with question """
+    id=models.AutoField(primary_key=True)
+    phase=models.IntegerField()
+    question_id=models.IntegerField()
+    tense=models.CharField(max_length=6)
+
+
+class DailyAlertCycle(models.Model):
+    """Daily Alerts"""
+    id=models.AutoField(primary_key=True)
+    day_cycle=models.IntegerField()
+    day_action=models.CharField(max_length=500,blank=True)
+    day_adv=models.CharField(max_length=500,blank=True)
+    fertiliser=models.CharField(max_length=500,blank=True)
+    fert_spray=models.CharField(max_length=100,blank=True)
+    fert_adv=models.CharField(max_length=200,blank=True)
+    diseases=models.CharField(max_length=200,blank=True)
+    symptoms=models.CharField(max_length=500,blank=True)
+    causes=models.CharField(max_length=500,blank=True)
+    prevention=models.CharField(max_length=500,blank=True)
+
+
+
+
+""" MAIN TABLES """
+
+
+
+
+class SeasonTable(models.Model):
+    """Basic List of season"""
+    season_id=models.AutoField(primary_key=True)
+    season_name=models.CharField(max_length=55)
+
+    def __str__(self):
+        """Return name of season """
+        return self.season_name
+
+class PhaseDecide(models.Model):
+    """Phase in terms of crop,season,daywise"""
+    id=models.AutoField(primary_key=True)
+    crop=models.ForeignKey(CropNames,on_delete=models.CASCADE)
+    season=models.ForeignKey(SeasonTable,on_delete=models.CASCADE)
+    start_day=models.IntegerField()
+    end_day=models.IntegerField()
+    phase_no=models.IntegerField()
+    phase_name=models.CharField(max_length=55)
+
+    def __str__(self):
+        """Return Phase Number """
+        return self.phase_no
+
+class MasterIdTable(models.Model):
+    """Master id in terms of crop,season,phase"""
+    m_id=models.IntegerField(primary_key=True)
+    phase=models.ForeignKey(PhaseDecide,db_column="phase_no",on_delete=models.CASCADE)
+    season=models.ForeignKey(SeasonTable,on_delete=models.CASCADE)
+    crop=models.ForeignKey(CropNames,on_delete=models.CASCADE)
+
+    def __str__(self):
+        """Return master id"""
+        return self.m_id
+
+class SoilTable(models.Model):
+    """Basic List of soil type"""
+    soil_id=models.AutoField(primary_key=True)
+    soil_type=models.CharField(max_length=55)
+
+    def __str__(self):
+        """Return Soil Type"""
+        return self.soil_type
+
+class M2Table(models.Model):
+    """M2 id based on crop and season"""
+    m2=models.IntegerField(primary_key=True)
+    crop_id=models.ForeignKey(CropNames,on_delete=models.CASCADE)
+    season_id=models.ForeignKey(SeasonTable,on_delete=models.CASCADE)
+
+    def __str__(self):
+        """Return m2 id"""
+        return self.m2
